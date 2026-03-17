@@ -1,109 +1,70 @@
-# Image Background Remover - MVP 需求文档
+# Image Background Remover - Pure Browser Version
 
-## 1. 产品概述
-一个在线AI图片背景移除工具，用户上传图片后自动移除背景，提供透明PNG下载。基于rembg本地AI模型，提供简单流畅的用户体验。
+AI powered image background remover that runs **completely in your browser** using ONNX Runtime Web and U2Netp model.
 
-## 2. 目标用户
-- 需要快速移除图片背景的设计师、电商卖家、自媒体创作者
-- 不想安装复杂软件的普通用户
-- 需要快速处理单张图片的用户
+No server required, your images never leave your browser, privacy protected. Perfect for Cloudflare Pages deployment.
 
-## 3. 核心功能 - MVP ✅ 已完成
+## ✨ Features
 
-### 3.1 图片上传
-- [x] 点击上传图片
-- [x] 拖拽上传图片
-- [x] 支持JPG、PNG、WebP等常见格式
-- [x] 文件大小限制：最大10MB
+- 🚀 **100% client-side** - Everything runs in the browser
+- 🔒 **Privacy first** - Images never uploaded to any server
+- 🎨 Drag & drop upload
+- 👁️ Original vs result preview
+- 💾 Download transparent PNG
+- 📱 Mobile friendly
+- ☁️ Ready for Cloudflare Pages deployment
 
-### 3.2 AI背景移除
-- [x] 使用rembg + u2netp轻量AI模型
-- [x] 服务端处理，前端无需加载大模型
-- [x] 显示处理进度
-- [x] 原图 vs 处理结果双栏对比预览
+## 🚀 Deployment
 
-### 3.3 结果下载
-- [x] 下载透明背景PNG格式
-- [x] 一键下载，无需额外步骤
+### Cloudflare Pages (Recommended)
 
-### 3.4 用户界面
-- [x] 简洁单页设计，无多余导航
-- [x] 响应式布局，支持移动端
-- [x] 现代Tailwind CSS样式，美观易用
-- [x] 透明背景棋盘格显示，效果直观
+1. Push this repository to your GitHub
+2. Log into Cloudflare Dashboard → Pages → Create a project
+3. Connect your GitHub repository
+4. Configure build settings:
+   - **Framework preset**: `None`
+   - **Build command**: (leave empty)
+   - **Output directory**: (leave empty, or `.`)
+   - **Root directory**: (leave empty)
+5. Click **Save and Deploy**
+6. Done! Your site is live.
 
-## 4. 技术架构
+The model (~45MB) will be downloaded once when the user first visits the page.
 
-### 后端
-- **框架**: Flask
-- **AI模型**: rembg + u2netp (轻量版)
-- **图片处理**: Pillow
-- **跨域**: Flask-CORS支持
+## 📋 How it works
 
-### 前端
-- **构建**: Vite
-- **样式**: Tailwind CSS (CDN)
-- **原生JavaScript，无需框架**
-- **静态资源直接托管**
+1. Uses **u2netp** (轻量版U2Net) AI model converted to ONNX format
+2. Runs the model directly in the browser using ONNX Runtime Web
+3. Processes the image and generates a transparency mask
+4. Applies the mask to the original image client-side
+5. Lets you download the result as a transparent PNG
 
-### 部署
-- 支持任意Python环境部署
-- 后端服务端口: 5000
+## 📦 Project Structure
 
-## 5. 非功能性需求
-- [x] 处理时间：单张图片一般在5-15秒（取决于服务器性能）
-- [x] 不存储用户原图，保护隐私
-- [x] CORS开放，支持前端分离部署
-
-## 6. 项目结构
 ```
-image-bg-removal/
-├── app.py                 # Flask后端服务
-├── requirements.txt       # Python依赖
-├── dist/
-│   └── index.html         # 编译好的前端页面
-└── venv/                  # Python虚拟环境
+.
+├── index.html          # Main application (all code in one file)
+├── _headers            # Cloudflare Pages headers configuration
+├── README.md           # This file
+└── .gitignore          # Git ignore
 ```
 
-## 7. 本地运行
+## 🔧 Local development
+
+Just open `index.html` in your browser (needs to be served via HTTP, not file://).
 
 ```bash
-# 安装依赖
-pip install -r requirements.txt
-
-# 启动服务
-python app.py
-
-# 访问 http://localhost:5000
+# Using Python simple server
+python3 -m http.server 8000
+# Then visit http://localhost:8000
 ```
 
-## 8. 超出MVP范围（未来版本计划）
+## 🎯 Model Credit
 
-- [ ] 批量上传处理多张图片
-- [ ] 背景替换功能（纯色/渐变/自定义图片背景）
-- [ ] 用户账号与历史记录保存
-- [ ] 图片尺寸调整
-- [ ] 支持更多输出格式（WebP/JPG）
-- [ ] 一键复制到剪贴板
-- [ ] 前端纯浏览器处理（WASM模型）
+- rembg: https://github.com/danielgatis/rembg
+- U2Net: https://github.com/xuebinqin/U-2-Net
+- ONNX Runtime Web: https://onnxruntime.ai/
 
-## 9. 依赖项
+## 📄 License
 
-```
-flask
-flask-cors
-rembg
-pillow
-```
-
----
-
-## MVP 验收标准
-
-- ✅ 用户可以上传图片
-- ✅ AI自动移除背景成功
-- ✅ 用户可以看到对比预览
-- ✅ 用户可以下载透明PNG
-- ✅ 界面简洁友好，移动端可用
-
-**MVP 状态：开发完成，可部署使用**
+MIT

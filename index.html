@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 图片背景移除 - 纯浏览器本地处理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-2">AI 图片背景移除</h1>
+        <p class="text-center text-gray-600 mb-8">纯浏览器本地处理，无需上传服务器，保护隐私</p>
+        
+        <div id="dropZone" class="border-2 border-dashed border-gray-400 rounded-lg p-12 text-center bg-white mb-6 hover:border-blue-500 transition-colors cursor-pointer">
+            <p class="text-gray-600 mb-2">拖拽图片到这里，或者</p>
+            <button id="selectBtn" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">选择图片</button>
+            <input type="file" id="fileInput" accept="image/*" class="hidden">
+            <p class="text-sm text-gray-500 mt-4">支持 JPG、PNG，最大 10MB</p>
+        </div>
+
+        <div id="loadingSection" class="hidden text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+            <p id="loadingText" class="text-gray-600">正在加载模型...</p>
+            <div class="w-full max-w-md mx-auto bg-gray-200 rounded-full h-2.5 mt-4">
+                <div id="progressBar" class="bg-blue-500 h-2.5 rounded-full w-0 transition-all duration-300"></div>
+            </div>
+        </div>
+
+        <div id="resultSection" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="text-xl font-semibold mb-3 text-gray-700">原始图片</h3>
+                <div id="originalContainer" class="bg-white rounded-lg p-4 shadow min-h-[300px] flex items-center justify-center"></div>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold mb-3 text-gray-700">处理结果</h3>
+                <div id="resultContainer" class="bg-white rounded-lg p-4 shadow min-h-[300px] flex items-center justify-center bg-[url('https://pic.imgdb.cn/item/66049ac0f21886ccc077d44d.png')] bg-repeat">
+                </div>
+            </div>
+        </div>
+
+        <div id="actionButtons" class="hidden text-center mt-6">
+            <button id="downloadBtn" class="bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-600 transition-colors inline-flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                下载透明PNG
+            </button>
+            <button id="newImageBtn" class="bg-gray-500 text-white px-8 py-3 rounded-lg hover:bg-gray-600 transition-colors ml-4">
+                处理新图片
+            </button>
+        </div>
+
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p> Powered by rembg + ONNX Runtime Web • 完全在浏览器中运行</p>
+        </footer>
+    </div>
+
+    <!-- ONNX Runtime Web -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/ort.min.js"></script>
+    <script>
+        // Configuration
+        const MODEL_URL = 'https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2netp.onnx';
+        
+        // Global variables
+        let model = null;
+        let session = null;
+        let ort = window.ort;
+        
+        // DOM elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const selectBtn = document.getElementById('selectBtn');
+        const loadingSection = document.getElementById('loadingSection');
+        const loadingText = document.getElementById('loadingText');
+        const progressBar = document.getElementById('progressBar');
+        const resultSection = document.getElementById('resultSection');
+        const actionButtons = document.getElementById('actionButtons');
+        const originalContainer = document.getElementById('originalContainer');
+        const resultContainer = document.getElementById('resultContainer');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const newImageBtn = document.getElementById('newImageBtn');
+
+        // Initialize
+        (async function init() {
+            ort.env.wasm.numThreads = 4;
+            ort.env.wasm.simd = true;
+            loadingSection.classList.remove('hidden');
+            try {
+                loadingText.textContent = '正在加载AI模型...';
+                const response = await fetch(MODEL_URL);
+                if (response.ok) {
+                    const reader = response.body.getReader();
+                    const contentLength = +response.headers.get('Content-Length');
+                    let receivedLength = 0;
+                    let chunks = [];
+                    
+                    while(true) {
+                        const {done, value} = await reader.read();
+                        if (done) break;
+                        chunks.push(value);
+                        receivedLength += value.length;
+                        const percent = (receivedLength / contentLength * 100).toFixed(0);
+                        progressBar.style.width = percent + '%';
+                        loadingText.textContent = `正在下载模型: ${percent}% (${(receivedLength/1024/1024).toFixed(1)}MB)`;
+                    }
+                    
+                    const blob = new Blob(chunks);
+                    const arrayBuffer = await blob.arrayBuffer();
+                    loadingText.textContent = '正在初始化模型...';
+                    session = await ort.InferenceSession.create(arrayBuffer);
+                    model = session;
+                    loadingSection.classList.add('hidden');
+                    console.log('Model loaded successfully');
+                } else {
+                    throw new Error('Failed to download model');
+                }
+            } catch (e) {
+                console.error('Error loading model:', e);
+                loadingText.textContent = '模型加载失败，请刷新页面重试。' + e.message;
+            }
+        })();
+
+        // Event listeners
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-blue-500');
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        });
+
+        selectBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                processFile(e.target.files[0]);
+            }
+        });
+
+        newImageBtn.addEventListener('click', () => {
+            resultSection.classList.add('hidden');
+            actionButtons.classList.add('hidden');
+            dropZone.classList.remove('hidden');
+            fileInput.value = '';
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const canvas = resultContainer.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'removed-background.png';
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                link.click();
+                URL.revokeObjectURL(url);
+            }, 'image/png');
+        });
+
+        async function processFile(file) {
+            if (!session) {
+                alert('模型还在加载中，请稍候...');
+                return;
+            }
+
+            dropZone.classList.add('hidden');
+            loadingSection.classList.remove('hidden');
+            loadingText.textContent = '正在处理图片...';
+            progressBar.style.width = '100%';
+
+            // Load original image
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                // Show original
+                const img = new Image();
+                img.onload = async () => {
+                    originalContainer.innerHTML = '';
+                    const scaledImg = document.createElement('img');
+                    scaledImg.src = img.src;
+                    scaledImg.className = 'max-w-full h-auto rounded';
+                    originalContainer.appendChild(scaledImg);
+
+                    // Process image
+                    const resultCanvas = await removeBackground(img);
+                    
+                    // Show result
+                    resultContainer.innerHTML = '';
+                    resultContainer.appendChild(resultCanvas);
+                    
+                    resultSection.classList.remove('hidden');
+                    actionButtons.classList.remove('hidden');
+                    loadingSection.classList.add('hidden');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function removeBackground(img) {
+            // Preprocess image
+            const [input, origW, origH] = preprocess(img);
+            
+            // Run inference
+            const feeds = { input: new ort.Tensor('float32', input, [1, 3, 320, 320]) };
+            const results = await session.run(feeds);
+            const output = results.output.data;
+            
+            // Postprocess
+            const mask = postprocess(output, origW, origH);
+            
+            // Apply mask to original image
+            return applyMask(img, mask);
+        }
+
+        function preprocess(img) {
+            // Resize to 320x320
+            const canvas = document.createElement('canvas');
+            canvas.width = 320;
+            canvas.height = 320;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, 320, 320);
+            const imageData = ctx.getImageData(0, 0, 320, 320);
+            const data = imageData.data;
+            
+            // Convert to tensor input [1, 3, 320, 320]
+            const input = new Float32Array(1 * 3 * 320 * 320);
+            for (let y = 0; y < 320; y++) {
+                for (let x = 0; x < 320; x++) {
+                    const idx = (y * 320 + x) * 4;
+                    const r = data[idx] / 255.0;
+                    const g = data[idx + 1] / 255.0;
+                    const b = data[idx + 2] / 255.0;
+                    // Normalize: mean [0.485, 0.456, 0.406], std [0.229, 0.224, 0.225]
+                    input[0 * 320 * 320 + y * 320 + x] = (r - 0.485) / 0.229;
+                    input[1 * 320 * 320 + y * 320 + x] = (g - 0.456) / 0.224;
+                    input[2 * 320 * 320 + y * 320 + x] = (b - 0.406) / 0.225;
+                }
+            }
+            return [input, img.width, img.height];
+        }
+
+        function postprocess(output, origW, origH) {
+            // output is [1, 1, 320, 320]
+            // Squeeze to [320, 320]
+            const maskCanvas = document.createElement('canvas');
+            maskCanvas.width = 320;
+            maskCanvas.height = 320;
+            const ctx = maskCanvas.getContext('2d');
+            const imageData = ctx.createImageData(320, 320);
+            const data = imageData.data;
+            
+            for (let y = 0; y < 320; y++) {
+                for (let x = 0; x < 320; x++) {
+                    const idx = y * 320 + x;
+                    const prob = 1.0 / (1.0 + Math.exp(-output[idx]));
+                    const v = Math.round(prob * 255);
+                    data[idx * 4] = v;
+                    data[idx * 4 + 1] = v;
+                    data[idx * 4 + 2] = v;
+                    data[idx * 4 + 3] = 255;
+                }
+            }
+            ctx.putImageData(imageData, 0, 0);
+            
+            // Resize to original size
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = origW;
+            finalCanvas.height = origH;
+            const finalCtx = finalCanvas.getContext('2d');
+            finalCtx.drawImage(maskCanvas, 0, 0, 320, 320, 0, 0, origW, origH);
+            
+            return finalCtx.getImageData(0, 0, origW, origH);
+        }
+
+        function applyMask(origImg, maskData) {
+            const canvas = document.createElement('canvas');
+            canvas.width = origImg.width;
+            canvas.height = origImg.height;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw original image
+            ctx.drawImage(origImg, 0, 0);
+            const origData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const origPixels = origData.data;
+            const maskPixels = maskData.data;
+            
+            // Apply alpha mask
+            for (let i = 0; i < origPixels.length; i += 4) {
+                // Mask pixel is grayscale, R = alpha
+                origPixels[i + 3] = maskPixels[i];
+            }
+            
+            ctx.putImageData(origData, 0, 0);
+            return canvas;
+        }
+    </script>
+</body>
+</html>
