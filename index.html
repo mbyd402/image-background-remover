@@ -59,8 +59,8 @@
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/ort.min.js"></script>
     <script>
         // Configuration
-        // Use jsDelivr CDN for better cross-domain access
-        const MODEL_URL = 'https://cdn.jsdelivr.net/gh/danielgatis/rembg@v0.0.0/u2netp.onnx';
+        // Use smaller quantized model from jsDelivr CDN (17MB)
+        const MODEL_URL = 'https://cdn.jsdelivr.net/gh/rembg/rembg-node@master/models/u2netp.quant.onnx';
         
         // Global variables
         let model = null;
