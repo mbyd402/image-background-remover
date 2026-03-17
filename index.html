@@ -1,26 +1,26 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 图片背景移除 - 纯浏览器本地处理</title>
+    <title>AI Background Remover - 100% Browser-based</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <h1 class="text-4xl font-bold text-center text-gray-800 mb-2">AI 图片背景移除</h1>
-        <p class="text-center text-gray-600 mb-8">纯浏览器本地处理，无需上传服务器，保护隐私</p>
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-2">AI Background Remover</h1>
+        <p class="text-center text-gray-600 mb-8">100% browser-based processing, no uploads, privacy-first</p>
         
         <div id="dropZone" class="border-2 border-dashed border-gray-400 rounded-lg p-12 text-center bg-white mb-6 hover:border-blue-500 transition-colors cursor-pointer">
-            <p class="text-gray-600 mb-2">拖拽图片到这里，或者</p>
-            <button id="selectBtn" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">选择图片</button>
+            <p class="text-gray-600 mb-2">Drag & drop an image here, or</p>
+            <button id="selectBtn" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">Select Image</button>
             <input type="file" id="fileInput" accept="image/*" class="hidden">
-            <p class="text-sm text-gray-500 mt-4">支持 JPG、PNG，最大 10MB</p>
+            <p class="text-sm text-gray-500 mt-4">Supports JPG, PNG up to 10MB</p>
         </div>
 
         <div id="loadingSection" class="hidden text-center py-8">
             <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-            <p id="loadingText" class="text-gray-600">正在加载模型...</p>
+            <p id="loadingText" class="text-gray-600">Loading model...</p>
             <div class="w-full max-w-md mx-auto bg-gray-200 rounded-full h-2.5 mt-4">
                 <div id="progressBar" class="bg-blue-500 h-2.5 rounded-full w-0 transition-all duration-300"></div>
             </div>
@@ -28,11 +28,11 @@
 
         <div id="resultSection" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <h3 class="text-xl font-semibold mb-3 text-gray-700">原始图片</h3>
+                <h3 class="text-xl font-semibold mb-3 text-gray-700">Original</h3>
                 <div id="originalContainer" class="bg-white rounded-lg p-4 shadow min-h-[300px] flex items-center justify-center"></div>
             </div>
             <div>
-                <h3 class="text-xl font-semibold mb-3 text-gray-700">处理结果</h3>
+                <h3 class="text-xl font-semibold mb-3 text-gray-700">Result</h3>
                 <div id="resultContainer" class="bg-white rounded-lg p-4 shadow min-h-[300px] flex items-center justify-center bg-[url('https://pic.imgdb.cn/item/66049ac0f21886ccc077d44d.png')] bg-repeat">
                 </div>
             </div>
@@ -43,15 +43,15 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                 </svg>
-                下载透明PNG
+                Download PNG
             </button>
             <button id="newImageBtn" class="bg-gray-500 text-white px-8 py-3 rounded-lg hover:bg-gray-600 transition-colors ml-4">
-                处理新图片
+                New Image
             </button>
         </div>
 
         <footer class="mt-12 text-center text-gray-500 text-sm">
-            <p> Powered by rembg + ONNX Runtime Web • 完全在浏览器中运行</p>
+            <p>Powered by rembg + ONNX Runtime Web • Runs entirely in your browser</p>
         </footer>
     </div>
 
@@ -89,7 +89,7 @@
             ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/';
             loadingSection.classList.remove('hidden');
             try {
-                loadingText.textContent = '正在加载AI模型...';
+                loadingText.textContent = 'Loading AI model...';
                 const response = await fetch(MODEL_URL);
                 if (response.ok) {
                     const reader = response.body.getReader();
@@ -104,12 +104,12 @@
                         receivedLength += value.length;
                         const percent = (receivedLength / contentLength * 100).toFixed(0);
                         progressBar.style.width = percent + '%';
-                        loadingText.textContent = `正在下载模型: ${percent}% (${(receivedLength/1024/1024).toFixed(1)}MB)`;
+                        loadingText.textContent = `Downloading model: ${percent}% (${(receivedLength/1024/1024).toFixed(1)}MB)`;
                     }
                     
                     const blob = new Blob(chunks);
                     const arrayBuffer = await blob.arrayBuffer();
-                    loadingText.textContent = '正在初始化模型...';
+                    loadingText.textContent = 'Initializing model...';
                     session = await ort.InferenceSession.create(arrayBuffer);
                     model = session;
                     loadingSection.classList.add('hidden');
@@ -119,7 +119,7 @@
                 }
             } catch (e) {
                 console.error('Error loading model:', e);
-                loadingText.textContent = '模型加载失败，请刷新页面重试。' + e.message;
+                loadingText.textContent = 'Failed to load model. Please refresh and try again. ' + e.message;
             }
         })();
 
@@ -175,13 +175,13 @@
 
         async function processFile(file) {
             if (!session) {
-                alert('模型还在加载中，请稍候...');
+                alert('Model is still loading, please wait...');
                 return;
             }
 
             dropZone.classList.add('hidden');
             loadingSection.classList.remove('hidden');
-            loadingText.textContent = '正在处理图片...';
+            loadingText.textContent = 'Processing image...';
             progressBar.style.width = '100%';
 
             // Load original image
