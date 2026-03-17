@@ -85,6 +85,8 @@
         (async function init() {
             ort.env.wasm.numThreads = 4;
             ort.env.wasm.simd = true;
+            // Configure WASM path from CDN
+            ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/';
             loadingSection.classList.remove('hidden');
             try {
                 loadingText.textContent = '正在加载AI模型...';
@@ -217,7 +219,11 @@
             // Run inference
             const feeds = { input: new ort.Tensor('float32', input, [1, 3, 320, 320]) };
             const results = await session.run(feeds);
-            const output = results.output.data;
+            console.log('Available outputs:', Object.keys(results));
+            
+            // Find the output tensor (different models have different output names)
+            let outputKey = Object.keys(results)[0];
+            const output = results[outputKey].data;
             
             // Postprocess
             const mask = postprocess(output, origW, origH);
