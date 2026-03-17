@@ -59,8 +59,8 @@
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/ort.min.js"></script>
     <script>
         // Configuration
-        // Use smaller quantized model from jsDelivr CDN (17MB)
-        const MODEL_URL = 'https://cdn.jsdelivr.net/gh/rembg/rembg-node@master/models/u2netp.quant.onnx';
+        // Model is included in the repo, loaded from same domain (no CORS issues)
+        const MODEL_URL = './u2netp.onnx';
         
         // Global variables
         let model = null;
