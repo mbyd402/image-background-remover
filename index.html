@@ -59,7 +59,8 @@
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/ort.min.js"></script>
     <script>
         // Configuration
-        const MODEL_URL = 'https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2netp.onnx';
+        // Use jsDelivr CDN for better cross-domain access
+        const MODEL_URL = 'https://cdn.jsdelivr.net/gh/danielgatis/rembg@v0.0.0/u2netp.onnx';
         
         // Global variables
         let model = null;
