@@ -4,185 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Background Remover - 100% Browser-based</title>
-<style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-body {
-    background-color: #f3f4f6;
-    min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-.container {
-    max-width: 72rem;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-}
-h1 {
-    font-size: 2.25rem;
-    font-weight: bold;
-    text-align: center;
-    color: #1f2937;
-    margin-bottom: 0.5rem;
-}
-p.lead {
-    text-align: center;
-    color: #4b5563;
-    margin-bottom: 2rem;
-}
-#dropZone {
-    border: 2px dashed #9ca3af;
-    border-radius: 0.5rem;
-    padding: 3rem;
-    text-align: center;
-    background-color: white;
-    margin-bottom: 1.5rem;
-    cursor: pointer;
-    transition: border-color 0.2s;
-}
-#dropZone:hover {
-    border-color: #3b82f6;
-}
-#dropZone p {
-    color: #4b5563;
-    margin-bottom: 0.5rem;
-}
-.btn {
-    background-color: #3b82f6;
-    color: white;
-    padding: 0.5rem 1.5rem;
-    border-radius: 0.5rem;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s;
-}
-.btn:hover {
-    background-color: #2563eb;
-}
-.btn-green {
-    background-color: #10b981;
-}
-.btn-green:hover {
-    background-color: #059669;
-}
-.btn-gray {
-    background-color: #6b7280;
-}
-.btn-gray:hover {
-    background-color: #4b5563;
-}
-#fileInput {
-    display: none;
-}
-.text-sm {
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin-top: 1rem;
-}
-.hidden {
-    display: none !important;
-}
-#loadingSection {
-    text-align: center;
-    padding: 2rem 0;
-}
-.spinner {
-    display: inline-block;
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    border-bottom: 2px solid #2563eb;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-}
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-#loadingText {
-    color: #4b5563;
-}
-.progress-container {
-    width: 100%;
-    max-width: 28rem;
-    margin: 1rem auto 0;
-    background-color: #e5e7eb;
-    border-radius: 9999px;
-    height: 0.625rem;
-}
-#progressBar {
-    background-color: #3b82f6;
-    height: 0.625rem;
-    border-radius: 9999px;
-    width: 0;
-    transition: width 0.3s;
-}
-.result-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-}
-@media (min-width: 768px) {
-    .result-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.75rem;
-}
-.image-container {
-    background-color: white;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    min-height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-#resultContainer {
-    background-image: url('https://pic.imgdb.cn/item/66049ac0f21886ccc077d44d.png');
-    background-repeat: repeat;
-}
-.action-buttons {
-    text-align: center;
-    margin-top: 1.5rem;
-}
-.action-buttons .btn {
-    padding: 0.75rem 2rem;
-    font-weight: 500;
-}
-.action-buttons .btn + .btn {
-    margin-left: 1rem;
-}
-footer {
-    margin-top: 3rem;
-    text-align: center;
-    color: #6b7280;
-    font-size: 0.875rem;
-}
-.max-w-full {
-    max-width: 100%;
-}
-.h-auto {
-    height: auto;
-}
-.rounded {
-    border-radius: 0.25rem;
-}
-</style>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f3f4f6;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        .container {
+            max-width: 72rem;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        h1 {
+            font-size: 2.25rem;
+            font-weight: bold;
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        p.lead {
+            text-align: center;
+            color: #4b5563;
+            margin-bottom: 2rem;
+        }
+        #dropZone {
+            border: 2px dashed #9ca3af;
+            border-radius: 0.5rem;
+            padding: 3rem;
+            text-align: center;
+            background-color: white;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        #dropZone:hover {
+            border-color: #3b82f6;
+        }
+        #dropZone p {
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+        .btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn:hover {
+            background-color: #2563eb;
+        }
+        .btn-green {
+            background-color: #10b981;
+        }
+        .btn-green:hover {
+            background-color: #059669;
+        }
+        .btn-gray {
+            background-color: #6b7280;
+        }
+        .btn-gray:hover {
+            background-color: #4b5563;
+        }
+        #fileInput {
+            display: none;
+        }
+        .text-sm {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 1rem;
+        }
+        .hidden {
+            display: none !important;
+        }
+        #loadingSection {
+            text-align: center;
+            padding: 2rem 0;
+        }
+        .spinner {
+            display: inline-block;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            border-bottom: 2px solid #2563eb;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        #loadingText {
+            color: #4b5563;
+        }
+        .progress-container {
+            width: 100%;
+            max-width: 28rem;
+            margin: 1rem auto 0;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            height: 0.625rem;
+        }
+        #progressBar {
+            background-color: #3b82f6;
+            height: 0.625rem;
+            border-radius: 9999px;
+            width: 0;
+            transition: width 0.3s;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.75rem;
+        }
+        .image-container {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #resultContainer {
+            background-image: url('https://pic.imgdb.cn/item/66049ac0f21886ccc077d44d.png');
+            background-repeat: repeat;
+        }
+        .action-buttons {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .action-buttons .btn {
+            padding: 0.75rem 2rem;
+            font-weight: 500;
+        }
+        .action-buttons .btn + .btn {
+            margin-left: 1rem;
+        }
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        .max-w-full {
+            max-width: 100%;
+        }
+        .h-auto {
+            height: auto;
+        }
+        .rounded {
+            border-radius: 0.25rem;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>🖼️ AI Background Remover</h1>
         <p class="lead">100% browser-based processing, no uploads, privacy-first</p>
-        
+
         <div id="dropZone">
             <p>Drag & drop an image here, or</p>
             <button id="selectBtn" class="btn">Select Image</button>
@@ -201,13 +204,11 @@ footer {
         <div id="resultSection" class="result-grid hidden">
             <div>
                 <h3>Original</h3>
-                <div id="originalContainer" class="image-container">
-                </div>
+                <div id="originalContainer" class="image-container"></div>
             </div>
             <div>
                 <h3>Result</h3>
-                <div id="resultContainer" class="image-container">
-                </div>
+                <div id="resultContainer" class="image-container"></div>
             </div>
         </div>
 
@@ -222,335 +223,342 @@ footer {
         </div>
 
         <footer>
-            <p>Powered by rembg + ONNX Runtime Web • Runs entirely in your browser</p>
+            <p>Powered by U2Netp + ONNX Runtime Web • Runs entirely in your browser</p>
         </footer>
     </div>
 
-    <!-- ONNX Runtime Web -->
+    <!-- ONNX Runtime Web from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/ort.min.js"></script>
-<script>
-    // Configuration
-    // Model is included in the repo, loaded from same domain (no CORS issues)
-    const MODEL_URL = './u2netp.onnx';
-    
-    // Global variables
-    let model = null;
-    let session = null;
-    let ort = window.ort;
-    
-    // DOM elements
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-    const selectBtn = document.getElementById('selectBtn');
-    const loadingSection = document.getElementById('loadingSection');
-    const loadingText = document.getElementById('loadingText');
-    const progressBar = document.getElementById('progressBar');
-    const resultSection = document.getElementById('resultSection');
-    const actionButtons = document.getElementById('actionButtons');
-    const originalContainer = document.getElementById('originalContainer');
-    const resultContainer = document.getElementById('resultContainer');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const newImageBtn = document.getElementById('newImageBtn');
+    <script>
+        (function() {
+            'use strict';
 
-    // Initialize
-    (function() {
-        console.log('Initializing ONNX Runtime...');
-        ort.env.wasm.numThreads = navigator.hardwareConcurrency || 2;
-        ort.env.wasm.simd = false; // Disable SIMD for broader compatibility
-        
-        // Configure WASM path - must end with slash
-        // Explicitly force non-SIMD wasm
-        if (typeof ort !== 'undefined' && ort.env && ort.env.wasm) {
-            ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/';
-            ort.env.wasm.wasmBinary = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/ort-wasm.wasm';
-        }
-        console.log('WASM paths configured:', ort.env.wasm.wasmPaths);
-        console.log('WASM binary:', ort.env.wasm.wasmBinary);
-        
-        // Ensure correct initial state:
-        // - Show loading section while downloading model
-        // - Hide dropZone during model download
-        loadingSection.classList.remove('hidden');
-        dropZone.classList.add('hidden');
+            // Configuration
+            const MODEL_URL = './u2netp.onnx';
+            const INPUT_SIZE = 320;
 
-        console.log('Starting model download...');
+            // Global variables
+            let session = null;
+            const ort = window.ort;
 
-        loadModel().catch(err => {
-            console.error('❌ Error loading model:', err);
-            loadingText.textContent = 'Failed to load model: ' + err.message;
-            // 秒后显示上传区域
-            setTimeout(() => {
-                loadingSection.classList.add('hidden');
-                dropZone.classList.remove('hidden');
-            }, 5000);
-        });
-    })();
+            // DOM elements
+            const dom = {
+                dropZone: document.getElementById('dropZone'),
+                fileInput: document.getElementById('fileInput'),
+                selectBtn: document.getElementById('selectBtn'),
+                loadingSection: document.getElementById('loadingSection'),
+                loadingText: document.getElementById('loadingText'),
+                progressBar: document.getElementById('progressBar'),
+                resultSection: document.getElementById('resultSection'),
+                actionButtons: document.getElementById('actionButtons'),
+                originalContainer: document.getElementById('originalContainer'),
+                resultContainer: document.getElementById('resultContainer'),
+                downloadBtn: document.getElementById('downloadBtn'),
+                newImageBtn: document.getElementById('newImageBtn')
+            };
 
-    async function loadModel() {
-        loadingText.textContent = 'Loading AI model...';
-        const response = await fetch(MODEL_URL);
-        console.log('Fetch response:', response.status, response.statusText);
-        if (!response.ok) {
-            throw new Error(`Failed to download model: ${response.status} ${response.statusText}`);
-        }
-        const reader = response.body.getReader();
-        const contentLength = +response.headers.get('Content-Length');
-        console.log('Content length:', contentLength);
-        let receivedLength = 0;
-        let chunks = [];
-        
-        while(true) {
-            const {done, value} = await reader.read();
-            if (done) break;
-            chunks.push(value);
-            receivedLength += value.length;
-            const percent = contentLength ? (receivedLength / contentLength * 100).toFixed(0) : 50;
-            progressBar.style.width = percent + '%';
-            loadingText.textContent = `Downloading model: ${percent}% (${(receivedLength/1024/1024).toFixed(1)}MB)`;
-        }
-        
-        console.log('Download complete, creating blob...');
-        const blob = new Blob(chunks);
-        const arrayBuffer = await blob.arrayBuffer();
-        loadingText.textContent = 'Initializing model...';
-        console.log('Creating inference session...');
-        session = await ort.InferenceSession.create(arrayBuffer);
-        model = session;
-        loadingSection.classList.add('hidden');
-        dropZone.classList.remove('hidden');
-        console.log('✅ Model loaded successfully! Input names:', session.inputNames);
-        console.log('✅ Output names:', session.outputNames);
-    }
+            // Initialize
+            function init() {
+                console.log('Initializing ONNX Runtime...');
 
-    // Event listeners
-    dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.style.borderColor = '#3b82f6';
-    });
+                // Configure ONNX Runtime environment
+                ort.env.wasm.numThreads = navigator.hardwareConcurrency || 2;
+                ort.env.wasm.simd = false; // Disable SIMD for broader compatibility
+                ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/';
 
-    dropZone.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        dropZone.style.borderColor = '#9ca3af';
-    });
+                // Show loading, hide drop zone while model downloads
+                dom.loadingSection.classList.remove('hidden');
+                dom.dropZone.classList.add('hidden');
 
-    dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.style.borderColor = '#9ca3af';
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            processFile(files[0]);
-        }
-    });
+                // Start loading model
+                loadModel().catch(err => {
+                    console.error('Error loading model:', err);
+                    dom.loadingText.textContent = 'Failed to load model: ' + err.message;
+                    setTimeout(() => {
+                        dom.loadingSection.classList.add('hidden');
+                        dom.dropZone.classList.remove('hidden');
+                    }, 5000);
+                });
 
-    selectBtn.addEventListener('click', () => {
-        console.log('Select button clicked');
-        fileInput.click();
-    });
+                // Bind event listeners
+                bindEvents();
+            }
 
-    fileInput.addEventListener('change', (e) => {
-        console.log('File selected');
-        if (e.target.files.length > 0) {
-            processFile(e.target.files[0]);
-        }
-    });
+            async function loadModel() {
+                dom.loadingText.textContent = 'Loading AI model...';
 
-    newImageBtn.addEventListener('click', () => {
-        resultSection.classList.add('hidden');
-        actionButtons.classList.add('hidden');
-        dropZone.classList.remove('hidden');
-        fileInput.value = '';
-    });
+                const response = await fetch(MODEL_URL);
+                if (!response.ok) {
+                    throw new Error(`Failed to download model: ${response.status} ${response.statusText}`);
+                }
 
-    downloadBtn.addEventListener('click', () => {
-        const canvas = resultContainer.querySelector('canvas');
-        if (!canvas) return;
-        const link = document.createElement('a');
-        link.download = 'removed-background.png';
-        canvas.toBlob((blob) => {
-            const url = URL.createObjectURL(blob);
-            link.href = url;
-            link.click();
-            URL.revokeObjectURL(url);
-        }, 'image/png');
-    });
+                const contentLength = +response.headers.get('Content-Length');
+                let receivedLength = 0;
+                const chunks = [];
+                const reader = response.body.getReader();
 
-    async function processFile(file) {
-        if (!session) {
-            alert('Model is still loading, please wait...');
-            return;
-        }
-
-        dropZone.classList.add('hidden');
-        loadingSection.classList.remove('hidden');
-        loadingText.textContent = 'Processing image...';
-        progressBar.style.width = '100%';
-        console.log('Starting to process file:', file.name, file.size + ' bytes');
-
-        // Load original image
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            try {
-                // Show original
-                const img = new Image();
-                img.crossOrigin = 'anonymous';
-                img.onload = async () => {
-                    try {
-                        console.log('Image loaded:', img.width + 'x' + img.height);
-                        originalContainer.innerHTML = '';
-                        const scaledImg = document.createElement('img');
-                        scaledImg.src = img.src;
-                        scaledImg.className = 'max-w-full h-auto rounded';
-                        originalContainer.appendChild(scaledImg);
-
-                        console.log('Starting background removal...');
-                        loadingText.textContent = 'Running AI inference...';
-                        // Process image
-                        const resultCanvas = await removeBackground(img);
-                        
-                        console.log('Background removal complete');
-                        // Show result
-                        resultContainer.innerHTML = '';
-                        resultContainer.appendChild(resultCanvas);
-                        
-                        resultSection.classList.remove('hidden');
-                        actionButtons.classList.remove('hidden');
-                        loadingSection.classList.add('hidden');
-                    } catch (processingError) {
-                        console.error('❌ Error during processing:', processingError);
-                        loadingText.textContent = 'Error processing image: ' + processingError.message;
-                        alert('Processing failed: ' + processingError.message);
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    chunks.push(value);
+                    receivedLength += value.length;
+                    if (contentLength) {
+                        const percent = (receivedLength / contentLength * 100).toFixed(0);
+                        dom.progressBar.style.width = percent + '%';
+                        dom.loadingText.textContent = `Downloading model: ${percent}% (${(receivedLength / 1024 / 1024).toFixed(1)}MB)`;
                     }
+                }
+
+                const blob = new Blob(chunks);
+                const arrayBuffer = await blob.arrayBuffer();
+
+                dom.loadingText.textContent = 'Initializing model...';
+                session = await ort.InferenceSession.create(arrayBuffer);
+
+                dom.loadingSection.classList.add('hidden');
+                dom.dropZone.classList.remove('hidden');
+                console.log('Model loaded successfully!');
+                console.log('Input names:', session.inputNames);
+                console.log('Output names:', session.outputNames);
+            }
+
+            function bindEvents() {
+                dom.dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dom.dropZone.style.borderColor = '#3b82f6';
+                });
+
+                dom.dropZone.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    dom.dropZone.style.borderColor = '#9ca3af';
+                });
+
+                dom.dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dom.dropZone.style.borderColor = '#9ca3af';
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        processFile(files[0]);
+                    }
+                });
+
+                dom.selectBtn.addEventListener('click', () => {
+                    dom.fileInput.click();
+                });
+
+                dom.fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        processFile(e.target.files[0]);
+                    }
+                });
+
+                dom.newImageBtn.addEventListener('click', resetForNewImage);
+
+                dom.downloadBtn.addEventListener('click', downloadResult);
+            }
+
+            function resetForNewImage() {
+                dom.resultSection.classList.add('hidden');
+                dom.actionButtons.classList.add('hidden');
+                dom.dropZone.classList.remove('hidden');
+                dom.fileInput.value = '';
+            }
+
+            function downloadResult() {
+                const canvas = dom.resultContainer.querySelector('canvas');
+                if (!canvas) return;
+
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = 'removed-background.png';
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                }, 'image/png');
+            }
+
+            async function processFile(file) {
+                if (!session) {
+                    alert('Model is still loading, please wait...');
+                    return;
+                }
+
+                dom.dropZone.classList.add('hidden');
+                dom.loadingSection.classList.remove('hidden');
+                dom.loadingText.textContent = 'Processing image...';
+                dom.progressBar.style.width = '100%';
+
+                console.log('Processing file:', file.name, file.size + ' bytes');
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = async () => {
+                        try {
+                            // Display original image
+                            dom.originalContainer.innerHTML = '';
+                            const scaledImg = document.createElement('img');
+                            scaledImg.src = img.src;
+                            scaledImg.className = 'max-w-full h-auto rounded';
+                            dom.originalContainer.appendChild(scaledImg);
+
+                            // Remove background
+                            dom.loadingText.textContent = 'Running AI inference...';
+                            const resultCanvas = await removeBackground(img);
+
+                            // Display result
+                            dom.resultContainer.innerHTML = '';
+                            dom.resultContainer.appendChild(resultCanvas);
+
+                            // Show result section
+                            dom.resultSection.classList.remove('hidden');
+                            dom.actionButtons.classList.remove('hidden');
+                            dom.loadingSection.classList.add('hidden');
+
+                            console.log('Processing complete!');
+                        } catch (err) {
+                            console.error('Processing error:', err);
+                            dom.loadingText.textContent = 'Error: ' + err.message;
+                            alert('Processing failed: ' + err.message);
+                        }
+                    };
+                    img.onerror = () => {
+                        console.error('Failed to load image');
+                        dom.loadingText.textContent = 'Failed to load image';
+                        alert('Failed to load image');
+                    };
+                    img.src = e.target.result;
                 };
-                img.onerror = function() {
-                    console.error('Failed to load image');
-                    loadingText.textContent = 'Failed to load image';
-                    alert('Failed to load image');
+
+                reader.onerror = () => {
+                    console.error('Failed to read file');
+                    dom.loadingText.textContent = 'Failed to read file';
+                    alert('Failed to read file');
                 };
-                img.src = e.target.result;
-            } catch (error) {
-                console.error('❌ Error in processFile:', error);
-                loadingText.textContent = 'Error: ' + error.message;
-                alert('Processing failed: ' + error.message);
+
+                reader.readAsDataURL(file);
             }
-        };
-        reader.onerror = function() {
-            console.error('Failed to read file');
-            loadingText.textContent = 'Failed to read file';
-            alert('Failed to read file');
-        };
-        reader.readAsDataURL(file);
-    }
 
-    async function removeBackground(img) {
-        console.log('Preprocessing image...');
-        // Preprocess image
-        const [input, origW, origH] = preprocess(img);
-        console.log('Preprocessing complete, input size:', input.length);
-        
-        console.log('Running inference...');
-        // Run inference
-        const feeds = { input: new ort.Tensor('float32', input, [1, 3, 320, 320]) };
-        const results = await session.run(feeds);
-        console.log('✅ Inference complete! Available outputs:', Object.keys(results));
-        
-        // Find the output tensor (different models have different output names)
-        let outputKey = Object.keys(results)[0];
-        console.log('Using output key:', outputKey);
-        const output = results[outputKey].data;
-        console.log('Output size:', output.length);
-        
-        console.log('Postprocessing mask...');
-        // Postprocess
-        const mask = postprocess(output, origW, origH);
-        
-        console.log('Applying mask...');
-        // Apply mask to original image
-        const resultCanvas = applyMask(img, mask);
-        console.log('✅ All processing complete!');
-        return resultCanvas;
-    }
+            async function removeBackground(img) {
+                console.log('Preprocessing image...');
+                const [input, origW, origH] = preprocess(img);
+                console.log('Preprocessing complete, input size:', input.length);
 
-    function preprocess(img) {
-        // Resize to 320x320
-        const canvas = document.createElement('canvas');
-        canvas.width = 320;
-        canvas.height = 320;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, 320, 320);
-        const imageData = ctx.getImageData(0, 0, 320, 320);
-        const data = imageData.data;
-        
-        // Convert to tensor input [1, 3, 320, 320]
-        const input = new Float32Array(1 * 3 * 320 * 320);
-        for (let y = 0; y < 320; y++) {
-            for (let x = 0; x < 320; x++) {
-                const idx = (y * 320 + x) * 4;
-                const r = data[idx] / 255.0;
-                const g = data[idx + 1] / 255.0;
-                const b = data[idx + 2] / 255.0;
-                // Normalize: mean [0.485, 0.456, 0.406], std [0.229, 0.224, 0.225]
-                input[0 * 320 * 320 + y * 320 + x] = (r - 0.485) / 0.229;
-                input[1 * 320 * 320 + y * 320 + x] = (g - 0.456) / 0.224;
-                input[2 * 320 * 320 + y * 320 + x] = (b - 0.406) / 0.225;
+                console.log('Running inference...');
+                const feeds = {};
+                feeds[session.inputNames[0]] = new ort.Tensor('float32', input, [1, 3, INPUT_SIZE, INPUT_SIZE]);
+                const results = await session.run(feeds);
+                console.log('Inference complete!');
+
+                const outputKey = Object.keys(results)[0];
+                const output = results[outputKey].data;
+                console.log('Output size:', output.length);
+
+                console.log('Postprocessing mask...');
+                const mask = postprocess(output, origW, origH);
+
+                console.log('Applying mask...');
+                const resultCanvas = applyMask(img, mask);
+                console.log('All processing complete!');
+                return resultCanvas;
             }
-        }
-        return [input, img.width, img.height];
-    }
 
-    function postprocess(output, origW, origH) {
-        // output is [1, 1, 320, 320]
-        // Squeeze to [320, 320]
-        const maskCanvas = document.createElement('canvas');
-        maskCanvas.width = 320;
-        maskCanvas.height = 320;
-        const ctx = maskCanvas.getContext('2d');
-        const imageData = ctx.createImageData(320, 320);
-        const data = imageData.data;
-        
-        for (let y = 0; y < 320; y++) {
-            for (let x = 0; x < 320; x++) {
-                const idx = y * 320 + x;
-                const prob = 1.0 / (1.0 + Math.exp(-output[idx]));
-                const v = Math.round(prob * 255);
-                data[idx * 4] = v;
-                data[idx * 4 + 1] = v;
-                data[idx * 4 + 2] = v;
-                data[idx * 4 + 3] = 255;
+            function preprocess(img) {
+                const canvas = document.createElement('canvas');
+                canvas.width = INPUT_SIZE;
+                canvas.height = INPUT_SIZE;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, INPUT_SIZE, INPUT_SIZE);
+                const imageData = ctx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE);
+                const data = imageData.data;
+
+                // ImageNet normalization: mean [0.485, 0.456, 0.406], std [0.229, 0.224, 0.225]
+                const input = new Float32Array(1 * 3 * INPUT_SIZE * INPUT_SIZE);
+
+                for (let y = 0; y < INPUT_SIZE; y++) {
+                    for (let x = 0; x < INPUT_SIZE; x++) {
+                        const idx = (y * INPUT_SIZE + x) * 4;
+                        const r = data[idx] / 255.0;
+                        const g = data[idx + 1] / 255.0;
+                        const b = data[idx + 2] / 255.0;
+
+                        const channel0 = (r - 0.485) / 0.229;
+                        const channel1 = (g - 0.456) / 0.224;
+                        const channel2 = (b - 0.406) / 0.225;
+
+                        input[0 * INPUT_SIZE * INPUT_SIZE + y * INPUT_SIZE + x] = channel0;
+                        input[1 * INPUT_SIZE * INPUT_SIZE + y * INPUT_SIZE + x] = channel1;
+                        input[2 * INPUT_SIZE * INPUT_SIZE + y * INPUT_SIZE + x] = channel2;
+                    }
+                }
+
+                return [input, img.width, img.height];
             }
-        }
-        ctx.putImageData(imageData, 0, 0);
-        
-        // Resize to original size
-        const finalCanvas = document.createElement('canvas');
-        finalCanvas.width = origW;
-        finalCanvas.height = origH;
-        const finalCtx = finalCanvas.getContext('2d');
-        finalCtx.drawImage(maskCanvas, 0, 0, 320, 320, 0, 0, origW, origH);
-        
-        return finalCtx.getImageData(0, 0, origW, origH);
-    }
 
-    function applyMask(origImg, maskData) {
-        const canvas = document.createElement('canvas');
-        canvas.width = origImg.width;
-        canvas.height = origImg.height;
-        const ctx = canvas.getContext('2d');
-        
-        // Draw original image
-        ctx.drawImage(origImg, 0, 0);
-        const origData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const origPixels = origData.data;
-        const maskPixels = maskData.data;
-        
-        // Apply alpha mask
-        for (let i = 0; i < origPixels.length; i += 4) {
-            // Mask pixel is grayscale, R = alpha
-            origPixels[i + 3] = maskPixels[i];
-        }
-        
-        ctx.putImageData(origData, 0, 0);
-        return canvas;
-    }
-</script>
+            function postprocess(output, origW, origH) {
+                // output is [1, 1, 320, 320]
+                const maskCanvas = document.createElement('canvas');
+                maskCanvas.width = INPUT_SIZE;
+                maskCanvas.height = INPUT_SIZE;
+                const ctx = maskCanvas.getContext('2d');
+                const imageData = ctx.createImageData(INPUT_SIZE, INPUT_SIZE);
+                const data = imageData.data;
+
+                for (let y = 0; y < INPUT_SIZE; y++) {
+                    for (let x = 0; x < INPUT_SIZE; x++) {
+                        const idx = y * INPUT_SIZE + x;
+                        // Sigmoid to get probability
+                        const prob = 1.0 / (1.0 + Math.exp(-output[idx]));
+                        const v = Math.round(prob * 255);
+                        data[idx * 4] = v;
+                        data[idx * 4 + 1] = v;
+                        data[idx * 4 + 2] = v;
+                        data[idx * 4 + 3] = 255;
+                    }
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+
+                // Resize to original dimensions
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = origW;
+                finalCanvas.height = origH;
+                const finalCtx = finalCanvas.getContext('2d');
+                finalCtx.drawImage(maskCanvas, 0, 0, INPUT_SIZE, INPUT_SIZE, 0, 0, origW, origH);
+
+                return finalCtx.getImageData(0, 0, origW, origH);
+            }
+
+            function applyMask(origImg, maskData) {
+                const canvas = document.createElement('canvas');
+                canvas.width = origImg.width;
+                canvas.height = origImg.height;
+                const ctx = canvas.getContext('2d');
+
+                // Draw original image
+                ctx.drawImage(origImg, 0, 0);
+                const origImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const origPixels = origImageData.data;
+                const maskPixels = maskData.data;
+
+                // Apply mask as alpha channel
+                for (let i = 0; i < origPixels.length; i += 4) {
+                    origPixels[i + 3] = maskPixels[i];
+                }
+
+                ctx.putImageData(origImageData, 0, 0);
+                return canvas;
+            }
+
+            // Start initialization when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
 </body>
 </html>
