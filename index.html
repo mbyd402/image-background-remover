@@ -127,6 +127,7 @@
                     session = await ort.InferenceSession.create(arrayBuffer);
                     model = session;
                     loadingSection.classList.add('hidden');
+                    dropZone.classList.remove('hidden');
                     console.log('✅ Model loaded successfully! Input names:', session.inputNames);
                     console.log('✅ Output names:', session.outputNames);
                 } else {
