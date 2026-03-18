@@ -131,8 +131,16 @@
             } catch (e) {
                 console.error('❌ Error loading model:', e);
                 loadingText.textContent = 'Failed to load model. Please refresh and try again. Error: ' + e.message;
+                // Don't keep loading screen forever, show upload area so user can at least try again
+                setTimeout(() => {
+                    loadingSection.classList.add('hidden');
+                    dropZone.classList.remove('hidden');
+                }, 5000);
             }
         })();
+
+        // Bind event listeners immediately - don't wait for model to load
+        // This ensures buttons work even if model is still loading or fails
 
         // Event listeners
         dropZone.addEventListener('dragover', (e) => {
