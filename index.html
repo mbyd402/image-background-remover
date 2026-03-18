@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Background Remover - 100% Browser-based</title>
+    <title>图片背景移除 - Remove.bg</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,52 +11,65 @@
             padding: 0;
         }
         body {
-            background-color: #f3f4f6;
+            background-color: #f8fafc;
             min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #1e293b;
         }
         .container {
-            max-width: 72rem;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 2rem 1rem 3rem;
         }
         h1 {
-            font-size: 2.25rem;
-            font-weight: bold;
+            font-size: 2rem;
+            font-weight: 700;
             text-align: center;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
+            color: #0f172a;
+            margin-bottom: 0.75rem;
         }
-        p.lead {
+        .subtitle {
             text-align: center;
-            color: #4b5563;
-            margin-bottom: 2rem;
+            color: #64748b;
+            font-size: 1rem;
+            margin-bottom: 2.5rem;
         }
         #dropZone {
-            border: 2px dashed #9ca3af;
-            border-radius: 0.5rem;
-            padding: 3rem;
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.75rem;
+            padding: 4rem 2rem;
             text-align: center;
             background-color: white;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             cursor: pointer;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
         }
         #dropZone:hover {
             border-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+        #dropZone.dragover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        #dropZone .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
         #dropZone p {
-            color: #4b5563;
-            margin-bottom: 0.5rem;
+            color: #475569;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
         }
         .btn {
             background-color: #3b82f6;
             color: white;
-            padding: 0.5rem 1.5rem;
+            padding: 0.75rem 2rem;
             border-radius: 0.5rem;
             border: none;
             cursor: pointer;
             font-size: 1rem;
+            font-weight: 500;
             transition: background-color 0.2s;
             display: inline-flex;
             align-items: center;
@@ -65,24 +78,24 @@
         .btn:hover {
             background-color: #2563eb;
         }
-        .btn-green {
+        .btn-success {
             background-color: #10b981;
         }
-        .btn-green:hover {
+        .btn-success:hover {
             background-color: #059669;
         }
-        .btn-gray {
-            background-color: #6b7280;
+        .btn-secondary {
+            background-color: #64748b;
         }
-        .btn-gray:hover {
-            background-color: #4b5563;
+        .btn-secondary:hover {
+            background-color: #475569;
         }
         #fileInput {
             display: none;
         }
-        .text-sm {
+        .hint {
             font-size: 0.875rem;
-            color: #6b7280;
+            color: #94a3b8;
             margin-top: 1rem;
         }
         .hidden {
@@ -90,14 +103,15 @@
         }
         #loadingSection {
             text-align: center;
-            padding: 2rem 0;
+            padding: 3rem 0;
         }
         .spinner {
             display: inline-block;
             width: 3rem;
             height: 3rem;
+            border: 3px solid #e2e8f0;
+            border-top-color: #3b82f6;
             border-radius: 50%;
-            border-bottom: 2px solid #2563eb;
             animation: spin 1s linear infinite;
             margin-bottom: 1rem;
         }
@@ -106,45 +120,25 @@
             to { transform: rotate(360deg); }
         }
         #loadingText {
-            color: #4b5563;
+            color: #64748b;
+            font-size: 1rem;
         }
-        .progress-container {
-            width: 100%;
-            max-width: 28rem;
-            margin: 1rem auto 0;
-            background-color: #e5e7eb;
-            border-radius: 9999px;
-            height: 0.625rem;
-        }
-        #progressBar {
-            background-color: #3b82f6;
-            height: 0.625rem;
-            border-radius: 9999px;
-            width: 0;
-            transition: width 0.3s;
-        }
-        .result-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-        @media (min-width: 768px) {
-            .result-grid {
-                grid-template-columns: 1fr 1fr;
-            }
+        .image-section {
+            margin-bottom: 2rem;
         }
         h3 {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             font-weight: 600;
-            color: #374151;
+            color: #334155;
             margin-bottom: 0.75rem;
+            padding-left: 0.25rem;
         }
         .image-container {
             background-color: white;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             padding: 1rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            min-height: 300px;
+            min-height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -155,100 +149,135 @@
         }
         .action-buttons {
             text-align: center;
-            margin-top: 1.5rem;
+            margin-top: 2rem;
         }
         .action-buttons .btn {
-            padding: 0.75rem 2rem;
+            padding: 0.875rem 2.5rem;
             font-weight: 500;
+            font-size: 1.05rem;
         }
         .action-buttons .btn + .btn {
             margin-left: 1rem;
         }
+        .config-note {
+            background-color: #f1f5f9;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3b82f6;
+        }
+        .config-note p {
+            color: #475569;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        .config-note strong {
+            color: #1e293b;
+        }
         footer {
             margin-top: 3rem;
             text-align: center;
-            color: #6b7280;
+            color: #94a3b8;
             font-size: 0.875rem;
         }
-        .max-w-full {
+        footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        .preview-image {
             max-width: 100%;
-        }
-        .max-h-[400px] {
-            max-height: 400px;
-        }
-        .h-auto {
+            max-height: 500px;
             height: auto;
-        }
-        .w-auto {
             width: auto;
-        }
-        .object-contain {
             object-fit: contain;
-        }
-        .rounded {
             border-radius: 0.25rem;
+        }
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            #dropZone {
+                padding: 2.5rem 1rem;
+            }
+            .action-buttons .btn + .btn {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
+            .action-buttons {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🖼️ AI Background Remover</h1>
-        <p class="lead">100% browser-based processing, no uploads, privacy-first</p>
+        <h1>🖼️ 图片背景移除</h1>
+        <p class="subtitle">一键移除图片背景， Powered by Remove.bg</p>
+
+        <div class="config-note">
+            <p><strong>配置说明：</strong>请在下方代码中填入你的 Remove.bg API Key。<br>
+            获取 API Key：<a href="https://www.remove.bg/api" target="_blank">https://www.remove.bg/api</a>（注册后可免费使用，每月有免费额度）</p>
+        </div>
 
         <div id="dropZone">
-            <p>Drag & drop an image here, or</p>
-            <button id="selectBtn" class="btn">Select Image</button>
+            <div class="icon">📁</div>
+            <p>拖拽图片到此处，或点击选择图片</p>
+            <button id="selectBtn" class="btn">选择图片</button>
             <input type="file" id="fileInput" accept="image/*" class="hidden">
-            <div class="text-sm">Supports JPG, PNG up to 10MB</div>
+            <div class="hint">支持 JPG、PNG，最大文件大小 12MB</div>
         </div>
 
         <div id="loadingSection" class="hidden">
             <div class="spinner"></div>
-            <p id="loadingText">Loading model...</p>
-            <div class="progress-container">
-                <div id="progressBar"></div>
-            </div>
+            <p id="loadingText">正在处理图片...</p>
         </div>
 
-        <div id="resultSection" class="result-grid hidden">
-            <div>
-                <h3>Original</h3>
-                <div id="originalContainer" class="image-container"></div>
+        <div id="resultSection">
+            <div class="image-section">
+                <h3>原图</h3>
+                <div id="originalContainer" class="image-container">
+                    <span style="color: #94a3b8;">请上传图片</span>
+                </div>
             </div>
-            <div>
-                <h3>Result</h3>
-                <div id="resultContainer" class="image-container"></div>
+            <div class="image-section">
+                <h3>处理结果</h3>
+                <div id="resultContainer" class="image-container">
+                    <span style="color: #94a3b8;">等待处理...</span>
+                </div>
             </div>
         </div>
 
         <div id="actionButtons" class="action-buttons hidden">
-            <button id="downloadBtn" class="btn btn-green">
+            <button id="downloadBtn" class="btn btn-success">
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                 </svg>
-                Download PNG
+                下载 PNG
             </button>
-            <button id="newImageBtn" class="btn btn-gray">New Image</button>
+            <button id="newImageBtn" class="btn btn-secondary">重新上传</button>
         </div>
 
         <footer>
-            <p>Powered by U2Netp + ONNX Runtime Web • Runs entirely in your browser</p>
+            <p>Powered by <a href="https://www.remove.bg" target="_blank">remove.bg</a> • 纯前端部署，适用于 Cloudflare Pages</p>
         </footer>
     </div>
 
-    <!-- ONNX Runtime Web from CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/ort.min.js"></script>
     <script>
         (function() {
             'use strict';
 
-            // Configuration
-            const MODEL_URL = './u2netp.onnx';
-            const INPUT_SIZE = 320;
+            // ========== 请在这里填写你的 Remove.bg API Key ==========
+            // 获取地址: https://www.remove.bg/api
+            const REMOVE_BG_API_KEY = '';
+            // =========================================================
 
-            // Global variables
-            let session = null;
-            const ort = window.ort;
+            // API endpoint
+            const REMOVE_BG_API_URL = 'https://api.remove.bg/v1.0/removebg';
 
             // DOM elements
             const dom = {
@@ -257,7 +286,6 @@
                 selectBtn: document.getElementById('selectBtn'),
                 loadingSection: document.getElementById('loadingSection'),
                 loadingText: document.getElementById('loadingText'),
-                progressBar: document.getElementById('progressBar'),
                 resultSection: document.getElementById('resultSection'),
                 actionButtons: document.getElementById('actionButtons'),
                 originalContainer: document.getElementById('originalContainer'),
@@ -266,91 +294,44 @@
                 newImageBtn: document.getElementById('newImageBtn')
             };
 
+            // Current result blob URL for download
+            let currentResultUrl = null;
+
             // Initialize
             function init() {
-                console.log('Initializing ONNX Runtime...');
+                // Check API key
+                if (!REMOVE_BG_API_KEY || REMOVE_BG_API_KEY.trim() === '') {
+                    console.warn('Please set your Remove.bg API Key in the code');
+                }
 
-                // Configure ONNX Runtime environment
-                ort.env.wasm.numThreads = navigator.hardwareConcurrency || 2;
-                ort.env.wasm.simd = false; // Disable SIMD for broader compatibility
-                ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/';
-
-                // Show loading, hide drop zone while model downloads
-                dom.loadingSection.classList.remove('hidden');
-                dom.dropZone.classList.add('hidden');
-
-                // Start loading model
-                loadModel().catch(err => {
-                    console.error('Error loading model:', err);
-                    dom.loadingText.textContent = 'Failed to load model: ' + err.message;
-                    setTimeout(() => {
-                        dom.loadingSection.classList.add('hidden');
-                        dom.dropZone.classList.remove('hidden');
-                    }, 5000);
-                });
-
-                // Bind event listeners
                 bindEvents();
             }
 
-            async function loadModel() {
-                dom.loadingText.textContent = 'Loading AI model...';
-
-                const response = await fetch(MODEL_URL);
-                if (!response.ok) {
-                    throw new Error(`Failed to download model: ${response.status} ${response.statusText}`);
-                }
-
-                const contentLength = +response.headers.get('Content-Length');
-                let receivedLength = 0;
-                const chunks = [];
-                const reader = response.body.getReader();
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    chunks.push(value);
-                    receivedLength += value.length;
-                    if (contentLength) {
-                        const percent = (receivedLength / contentLength * 100).toFixed(0);
-                        dom.progressBar.style.width = percent + '%';
-                        dom.loadingText.textContent = `Downloading model: ${percent}% (${(receivedLength / 1024 / 1024).toFixed(1)}MB)`;
-                    }
-                }
-
-                const blob = new Blob(chunks);
-                const arrayBuffer = await blob.arrayBuffer();
-
-                dom.loadingText.textContent = 'Initializing model...';
-                session = await ort.InferenceSession.create(arrayBuffer);
-
-                dom.loadingSection.classList.add('hidden');
-                dom.dropZone.classList.remove('hidden');
-                console.log('Model loaded successfully!');
-                console.log('Input names:', session.inputNames);
-                console.log('Output names:', session.outputNames);
-            }
-
             function bindEvents() {
+                // Drag and drop
                 dom.dropZone.addEventListener('dragover', (e) => {
                     e.preventDefault();
-                    dom.dropZone.style.borderColor = '#3b82f6';
+                    e.stopPropagation();
+                    dom.dropZone.classList.add('dragover');
                 });
 
                 dom.dropZone.addEventListener('dragleave', (e) => {
                     e.preventDefault();
-                    dom.dropZone.style.borderColor = '#9ca3af';
+                    e.stopPropagation();
+                    dom.dropZone.classList.remove('dragover');
                 });
 
                 dom.dropZone.addEventListener('drop', (e) => {
                     e.preventDefault();
-                    dom.dropZone.style.borderColor = '#9ca3af';
+                    e.stopPropagation();
+                    dom.dropZone.classList.remove('dragover');
                     const files = e.dataTransfer.files;
                     if (files.length > 0) {
                         processFile(files[0]);
                     }
                 });
 
+                // Click to select
                 dom.selectBtn.addEventListener('click', () => {
                     dom.fileInput.click();
                 });
@@ -361,206 +342,133 @@
                     }
                 });
 
+                // Buttons
                 dom.newImageBtn.addEventListener('click', resetForNewImage);
-
                 dom.downloadBtn.addEventListener('click', downloadResult);
             }
 
             function resetForNewImage() {
-                dom.resultSection.classList.add('hidden');
-                dom.actionButtons.classList.add('hidden');
+                // Revoke previous blob URL to free memory
+                if (currentResultUrl) {
+                    URL.revokeObjectURL(currentResultUrl);
+                    currentResultUrl = null;
+                }
+
                 dom.dropZone.classList.remove('hidden');
+                dom.actionButtons.classList.add('hidden');
                 dom.fileInput.value = '';
+
+                // Clear containers
+                dom.originalContainer.innerHTML = '<span style="color: #94a3b8;">请上传图片</span>';
+                dom.resultContainer.innerHTML = '<span style="color: #94a3b8;">等待处理...</span>';
             }
 
             function downloadResult() {
-                const canvas = dom.resultContainer.querySelector('canvas');
-                if (!canvas) return;
+                if (!currentResultUrl) return;
 
-                canvas.toBlob((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.download = 'removed-background.png';
-                    link.href = url;
-                    link.click();
-                    URL.revokeObjectURL(url);
-                }, 'image/png');
+                const link = document.createElement('a');
+                link.download = 'background-removed.png';
+                link.href = currentResultUrl;
+                link.click();
             }
 
             async function processFile(file) {
-                if (!session) {
-                    alert('Model is still loading, please wait...');
+                // Validate API key
+                if (!REMOVE_BG_API_KEY || REMOVE_BG_API_KEY.trim() === '') {
+                    alert('错误：请先在代码中设置 Remove.bg API Key\n\n获取地址：https://www.remove.bg/api');
                     return;
                 }
 
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('请选择一个图片文件');
+                    return;
+                }
+
+                // Validate file size (12MB max for free tier)
+                if (file.size > 12 * 1024 * 1024) {
+                    alert('文件大小不能超过 12MB');
+                    return;
+                }
+
+                // Show original image
                 dom.dropZone.classList.add('hidden');
                 dom.loadingSection.classList.remove('hidden');
-                dom.loadingText.textContent = 'Processing image...';
-                dom.progressBar.style.width = '100%';
-
-                console.log('Processing file:', file.name, file.size + ' bytes');
+                dom.actionButtons.classList.add('hidden');
 
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const img = new Image();
+                    const img = document.createElement('img');
                     img.crossOrigin = 'anonymous';
-                    img.onload = async () => {
-                        try {
-                            // Display original image
-                            dom.originalContainer.innerHTML = '';
-                            const scaledImg = document.createElement('img');
-                            scaledImg.src = img.src;
-                            scaledImg.className = 'max-w-full max-h-[400px] h-auto w-auto object-contain rounded';
-                            dom.originalContainer.appendChild(scaledImg);
-
-                            // Remove background
-                            dom.loadingText.textContent = 'Running AI inference...';
-                            const resultCanvas = await removeBackground(img);
-
-                            // Display result
-                            dom.resultContainer.innerHTML = '';
-                            // Add CSS classes to limit canvas size like original image
-                            resultCanvas.className = 'max-w-full max-h-[400px] h-auto w-auto object-contain rounded';
-                            dom.resultContainer.appendChild(resultCanvas);
-
-                            // Show result section
-                            dom.resultSection.classList.remove('hidden');
-                            dom.actionButtons.classList.remove('hidden');
-                            dom.loadingSection.classList.add('hidden');
-
-                            console.log('Processing complete!');
-                        } catch (err) {
-                            console.error('Processing error:', err);
-                            dom.loadingText.textContent = 'Error: ' + err.message;
-                            alert('Processing failed: ' + err.message);
-                        }
-                    };
-                    img.onerror = () => {
-                        console.error('Failed to load image');
-                        dom.loadingText.textContent = 'Failed to load image';
-                        alert('Failed to load image');
+                    img.onload = () => {
+                        dom.originalContainer.innerHTML = '';
+                        img.className = 'preview-image';
+                        dom.originalContainer.appendChild(img);
                     };
                     img.src = e.target.result;
                 };
-
-                reader.onerror = () => {
-                    console.error('Failed to read file');
-                    dom.loadingText.textContent = 'Failed to read file';
-                    alert('Failed to read file');
-                };
-
                 reader.readAsDataURL(file);
+
+                // Send request to remove.bg API
+                try {
+                    await removeBackground(file);
+                } catch (err) {
+                    console.error('Processing error:', err);
+                    alert('处理失败：' + err.message);
+                    resetForNewImage();
+                }
             }
 
-            async function removeBackground(img) {
-                console.log('Preprocessing image...');
-                const [input, origW, origH] = preprocess(img);
-                console.log('Preprocessing complete, input size:', input.length);
+            async function removeBackground(file) {
+                dom.loadingText.textContent = '正在上传图片并处理...';
 
-                console.log('Running inference...');
-                const feeds = {};
-                feeds[session.inputNames[0]] = new ort.Tensor('float32', input, [1, 3, INPUT_SIZE, INPUT_SIZE]);
-                const results = await session.run(feeds);
-                console.log('Inference complete!');
+                const formData = new FormData();
+                formData.append('image_file', file);
+                formData.append('size', 'auto');
 
-                const outputKey = Object.keys(results)[0];
-                const output = results[outputKey].data;
-                console.log('Output size:', output.length);
+                const response = await fetch(REMOVE_BG_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'X-Api-Key': REMOVE_BG_API_KEY.trim()
+                    },
+                    body: formData
+                });
 
-                console.log('Postprocessing mask...');
-                const mask = postprocess(output, origW, origH);
-
-                console.log('Applying mask...');
-                const resultCanvas = applyMask(img, mask);
-                console.log('All processing complete!');
-                return resultCanvas;
-            }
-
-            function preprocess(img) {
-                const canvas = document.createElement('canvas');
-                canvas.width = INPUT_SIZE;
-                canvas.height = INPUT_SIZE;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, INPUT_SIZE, INPUT_SIZE);
-                const imageData = ctx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE);
-                const data = imageData.data;
-
-                // ImageNet normalization: mean [0.485, 0.456, 0.406], std [0.229, 0.224, 0.225]
-                const input = new Float32Array(1 * 3 * INPUT_SIZE * INPUT_SIZE);
-
-                for (let y = 0; y < INPUT_SIZE; y++) {
-                    for (let x = 0; x < INPUT_SIZE; x++) {
-                        const idx = (y * INPUT_SIZE + x) * 4;
-                        const r = data[idx] / 255.0;
-                        const g = data[idx + 1] / 255.0;
-                        const b = data[idx + 2] / 255.0;
-
-                        const channel0 = (r - 0.485) / 0.229;
-                        const channel1 = (g - 0.456) / 0.224;
-                        const channel2 = (b - 0.406) / 0.225;
-
-                        input[0 * INPUT_SIZE * INPUT_SIZE + y * INPUT_SIZE + x] = channel0;
-                        input[1 * INPUT_SIZE * INPUT_SIZE + y * INPUT_SIZE + x] = channel1;
-                        input[2 * INPUT_SIZE * INPUT_SIZE + y * INPUT_SIZE + x] = channel2;
+                if (!response.ok) {
+                    let errorMsg = `HTTP ${response.status}`;
+                    try {
+                        const errorJson = await response.json();
+                        if (errorJson && errorJson.error) {
+                            errorMsg = errorJson.error.title || errorJson.error.message || errorMsg;
+                        }
+                    } catch (e) {
+                        // ignore
                     }
+                    throw new Error(errorMsg);
                 }
 
-                return [input, img.width, img.height];
-            }
+                const blob = await response.blob();
 
-            function postprocess(output, origW, origH) {
-                // output is [1, 1, 320, 320]
-                const maskCanvas = document.createElement('canvas');
-                maskCanvas.width = INPUT_SIZE;
-                maskCanvas.height = INPUT_SIZE;
-                const ctx = maskCanvas.getContext('2d');
-                const imageData = ctx.createImageData(INPUT_SIZE, INPUT_SIZE);
-                const data = imageData.data;
-
-                for (let y = 0; y < INPUT_SIZE; y++) {
-                    for (let x = 0; x < INPUT_SIZE; x++) {
-                        const idx = y * INPUT_SIZE + x;
-                        // Sigmoid to get probability
-                        const prob = 1.0 / (1.0 + Math.exp(-output[idx]));
-                        const v = Math.round(prob * 255);
-                        data[idx * 4] = v;
-                        data[idx * 4 + 1] = v;
-                        data[idx * 4 + 2] = v;
-                        data[idx * 4 + 3] = 255;
-                    }
+                // Revoke old result if exists
+                if (currentResultUrl) {
+                    URL.revokeObjectURL(currentResultUrl);
                 }
 
-                ctx.putImageData(imageData, 0, 0);
+                currentResultUrl = URL.createObjectURL(blob);
 
-                // Resize to original dimensions
-                const finalCanvas = document.createElement('canvas');
-                finalCanvas.width = origW;
-                finalCanvas.height = origH;
-                const finalCtx = finalCanvas.getContext('2d');
-                finalCtx.drawImage(maskCanvas, 0, 0, INPUT_SIZE, INPUT_SIZE, 0, 0, origW, origH);
+                // Display result
+                const img = document.createElement('img');
+                img.className = 'preview-image';
+                img.src = currentResultUrl;
 
-                return finalCtx.getImageData(0, 0, origW, origH);
-            }
+                dom.resultContainer.innerHTML = '';
+                dom.resultContainer.appendChild(img);
 
-            function applyMask(origImg, maskData) {
-                const canvas = document.createElement('canvas');
-                canvas.width = origImg.width;
-                canvas.height = origImg.height;
-                const ctx = canvas.getContext('2d');
+                // Complete
+                dom.loadingSection.classList.add('hidden');
+                dom.actionButtons.classList.remove('hidden');
 
-                // Draw original image
-                ctx.drawImage(origImg, 0, 0);
-                const origImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const origPixels = origImageData.data;
-                const maskPixels = maskData.data;
-
-                // Apply mask as alpha channel
-                for (let i = 0; i < origPixels.length; i += 4) {
-                    origPixels[i + 3] = maskPixels[i];
-                }
-
-                ctx.putImageData(origImageData, 0, 0);
-                return canvas;
+                console.log('Background removed successfully!');
             }
 
             // Start initialization when DOM is ready

@@ -1,57 +1,60 @@
-# Image Background Remover - Pure Browser Version
+# Image Background Remover - Remove.bg API Version
 
-AI powered image background remover that runs **completely in your browser** using ONNX Runtime Web and U2Netp model.
-
-No server required, your images never leave your browser, privacy protected. Perfect for Cloudflare Pages deployment.
+Simple and clean image background remover powered by [remove.bg](https://www.remove.bg) API. Pure frontend static page, ready for Cloudflare Pages deployment.
 
 ## ✨ Features
 
-- 🚀 **100% client-side** - Everything runs in the browser
-- 🔒 **Privacy first** - Images never uploaded to any server
-- 🎨 Drag & drop upload
-- 👁️ Original vs result preview
-- 💾 Download transparent PNG
-- 📱 Mobile friendly
-- ☁️ Ready for Cloudflare Pages deployment
+- 🎨 **Drag & drop** or click to upload images
+- 🚀 Powered by remove.bg API - accurate results
+- 🖼️ Clean layout - Original image on top, result below
+- 💾 One-click download as transparent PNG
+- 📱 Fully responsive, mobile friendly
+- ☁️ Ready for Cloudflare Pages deployment - just deploy and go
 
-## 🚀 Deployment
+## 🔑 Configuration
 
-### Cloudflare Pages (Recommended)
+Before deployment, you need to:
 
-1. Push this repository to your GitHub
+1. Get a free API Key from [remove.bg](https://www.remove.bg/api) (register an account)
+2. Open `index.html` and find this line around line 184:
+
+```javascript
+// ========== 请在这里填写你的 Remove.bg API Key ==========
+// 获取地址: https://www.remove.bg/api
+const REMOVE_BG_API_KEY = '';
+// =========================================================
+```
+
+3. Put your API key in the `REMOVE_BG_API_KEY` variable:
+```javascript
+const REMOVE_BG_API_KEY = 'your-api-key-here';
+```
+
+## 🚀 Deployment to Cloudflare Pages
+
+1. Push this repository to your GitHub/GitLab
 2. Log into Cloudflare Dashboard → Pages → Create a project
-3. Connect your GitHub repository
+3. Connect your repository
 4. Configure build settings:
    - **Framework preset**: `None`
    - **Build command**: (leave empty)
    - **Output directory**: (leave empty, or `.`)
-   - **Root directory**: (leave empty)
 5. Click **Save and Deploy**
 6. Done! Your site is live.
-
-The model (~45MB) will be downloaded once when the user first visits the page.
-
-## 📋 How it works
-
-1. Uses **u2netp** (轻量版U2Net) AI model converted to ONNX format
-2. Runs the model directly in the browser using ONNX Runtime Web
-3. Processes the image and generates a transparency mask
-4. Applies the mask to the original image client-side
-5. Lets you download the result as a transparent PNG
 
 ## 📦 Project Structure
 
 ```
 .
 ├── index.html          # Main application (all code in one file)
-├── _headers            # Cloudflare Pages headers configuration
+├── _headers            # Cloudflare Pages headers (optional)
 ├── README.md           # This file
 └── .gitignore          # Git ignore
 ```
 
 ## 🔧 Local development
 
-Just open `index.html` in your browser (needs to be served via HTTP, not file://).
+Just open `index.html` in your browser (needs to be served via HTTP):
 
 ```bash
 # Using Python simple server
@@ -59,11 +62,13 @@ python3 -m http.server 8000
 # Then visit http://localhost:8000
 ```
 
-## 🎯 Model Credit
+## 💡 Pricing
 
-- rembg: https://github.com/danielgatis/rembg
-- U2Net: https://github.com/xuebinqin/U-2-Net
-- ONNX Runtime Web: https://onnxruntime.ai/
+remove.bg has a free tier: 
+- Free: 50 images per month
+- Paid plans available for more processing
+
+See: https://www.remove.bg/pricing
 
 ## 📄 License
 
