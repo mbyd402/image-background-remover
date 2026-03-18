@@ -96,7 +96,13 @@
             }
             console.log('WASM paths configured:', ort.env.wasm.wasmPaths);
             console.log('WASM binary:', ort.env.wasm.wasmBinary);
+            
+            // Ensure correct initial state:
+            // - Show loading section while downloading model
+            // - Hide dropZone during model download
             loadingSection.classList.remove('hidden');
+            dropZone.classList.add('hidden');
+            
             try {
                 loadingText.textContent = 'Loading AI model...';
                 console.log('Starting model download from:', MODEL_URL);
