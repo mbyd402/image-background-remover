@@ -24,7 +24,9 @@ export default {
 
     try {
       const formData = await request.formData();
-      const apiKey = request.headers.get('X-Api-Key');
+      
+      // Get API key from Cloudflare environment variable
+      const apiKey = env.REMOVE_BG_API_KEY || '3K9RgPY668AueP26K4UzPenL';
       
       // Forward the request to remove.bg
       const newFormData = new FormData();
