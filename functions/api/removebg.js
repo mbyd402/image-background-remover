@@ -1,10 +1,13 @@
 export default {
   async fetch(request, env, ctx) {
+    // Get allowed origin from environment or default to your domain
+    const allowedOrigin = env.ALLOWED_ORIGIN || '*';
+    
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': allowedOrigin,
           'Access-Control-Allow-Methods': 'POST, OPTIONS',
           'Access-Control-Allow-Headers': '*',
           'Access-Control-Max-Age': '86400',
@@ -16,7 +19,7 @@ export default {
       return new Response(JSON.stringify({ error: 'Method not allowed' }), {
         status: 405,
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': allowedOrigin,
           'Content-Type': 'application/json',
         },
       });
@@ -46,7 +49,7 @@ export default {
 
       return new Response(blob, {
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': allowedOrigin,
           'Content-Type': response.headers.get('Content-Type') || 'image/png',
         },
       });
@@ -54,7 +57,7 @@ export default {
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': allowedOrigin,
           'Content-Type': 'application/json',
         },
       });
