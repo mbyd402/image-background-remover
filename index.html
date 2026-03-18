@@ -173,8 +173,17 @@
         .max-w-full {
             max-width: 100%;
         }
+        .max-h-[400px] {
+            max-height: 400px;
+        }
         .h-auto {
             height: auto;
+        }
+        .w-auto {
+            width: auto;
+        }
+        .object-contain {
+            object-fit: contain;
         }
         .rounded {
             border-radius: 0.25rem;
@@ -401,7 +410,7 @@
                             dom.originalContainer.innerHTML = '';
                             const scaledImg = document.createElement('img');
                             scaledImg.src = img.src;
-                            scaledImg.className = 'max-w-full h-auto rounded';
+                            scaledImg.className = 'max-w-full max-h-[400px] h-auto w-auto object-contain rounded';
                             dom.originalContainer.appendChild(scaledImg);
 
                             // Remove background
@@ -410,6 +419,8 @@
 
                             // Display result
                             dom.resultContainer.innerHTML = '';
+                            // Add CSS classes to limit canvas size like original image
+                            resultCanvas.className = 'max-w-full max-h-[400px] h-auto w-auto object-contain rounded';
                             dom.resultContainer.appendChild(resultCanvas);
 
                             // Show result section
