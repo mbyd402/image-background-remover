@@ -276,7 +276,7 @@
             const REMOVE_BG_API_KEY = '3K9RgPY668AueP26K4UzPenL';
             // =========================================================
 
-            // API endpoint - Cloudflare Pages 代理
+            // API endpoint - 本地后端代理
             const REMOVE_BG_API_URL = '/api/removebg';
 
             // DOM elements
@@ -429,7 +429,8 @@
                 const response = await fetch(REMOVE_BG_API_URL, {
                     method: 'POST',
                     headers: {
-                        'X-Api-Key': REMOVE_BG_API_KEY.trim()
+                        'X-Api-Key': REMOVE_BG_API_KEY.trim(),
+                        'Origin': window.location.origin
                     },
                     body: formData
                 });

@@ -1,0 +1,27 @@
+{
+  "name": "image-bg-removal",
+  "version": "1.0.0",
+  "description": "Simple and clean image background remover powered by [remove.bg](https://www.remove.bg) API. Pure frontend static page, ready for Cloudflare Pages deployment.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mbyd402/image-background-remover.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mbyd402/image-background-remover/issues"
+  },
+  "homepage": "https://github.com/mbyd402/image-background-remover#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "form-data": "^4.0.5",
+    "multer": "^2.1.1",
+    "node-fetch": "^3.3.2"
+  }
+}
