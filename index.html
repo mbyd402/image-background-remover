@@ -276,8 +276,8 @@
             const REMOVE_BG_API_KEY = '3K9RgPY668AueP26K4UzPenL';
             // =========================================================
 
-            // API endpoint - 使用Cloudflare Pages代理解决CORS问题
-            const REMOVE_BG_API_URL = '/api/removebg';
+            // API endpoint - 使用allorigins.win CORS代理解决跨域问题
+            const REMOVE_BG_API_URL = 'https://api.allorigins.win/post?url=' + encodeURIComponent('https://api.remove.bg/v1.0/removebg');
 
             // DOM elements
             const dom = {
@@ -447,7 +447,18 @@
                     throw new Error(errorMsg);
                 }
 
-                const blob = await response.blob();
+                // allorigins.win returns { contents: "base64..." }
+                const data = await response.json();
+                // Convert base64 to blob
+                const byteString = atob(data.contents);
+                const mimeString = 'image/png';
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                const blob = new Blob([ab], { type: mimeString });
+
 
                 // Revoke old result if exists
                 if (currentResultUrl) {
