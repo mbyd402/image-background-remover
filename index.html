@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片背景移除 - Remove.bg</title>
+    <title>AI Background Remover</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,91 +11,96 @@
             padding: 0;
         }
         body {
-            background-color: #f8fafc;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: #1e293b;
+            color: #2c3e50;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 2rem 1rem 3rem;
         }
         h1 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
             text-align: center;
-            color: #0f172a;
-            margin-bottom: 0.75rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
         }
         .subtitle {
             text-align: center;
-            color: #64748b;
+            color: #7f8c8d;
             font-size: 1rem;
             margin-bottom: 2.5rem;
         }
         #dropZone {
-            border: 2px dashed #cbd5e1;
-            border-radius: 0.75rem;
+            border: 2px dashed #bdc3c7;
+            border-radius: 12px;
             padding: 4rem 2rem;
             text-align: center;
             background-color: white;
             margin-bottom: 2rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         #dropZone:hover {
-            border-color: #3b82f6;
-            background-color: #f8fafc;
+            border-color: #3498db;
+            background-color: #f8f9fa;
         }
         #dropZone.dragover {
-            border-color: #3b82f6;
-            background-color: #eff6ff;
+            border-color: #3498db;
+            background-color: #e8f4f8;
         }
         #dropZone .icon {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin-bottom: 1rem;
         }
         #dropZone p {
-            color: #475569;
-            font-size: 1.125rem;
-            margin-bottom: 1rem;
+            color: #555555;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
         }
         .btn {
-            background-color: #3b82f6;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
-            padding: 0.75rem 2rem;
-            border-radius: 0.5rem;
+            padding: 0.875rem 2.5rem;
+            border-radius: 8px;
             border: none;
             cursor: pointer;
             font-size: 1rem;
             font-weight: 500;
-            transition: background-color 0.2s;
+            transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
         }
         .btn:hover {
-            background-color: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
         }
         .btn-success {
-            background-color: #10b981;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            box-shadow: 0 2px 4px rgba(46, 204, 113, 0.3);
         }
         .btn-success:hover {
-            background-color: #059669;
+            box-shadow: 0 4px 8px rgba(46, 204, 113, 0.4);
         }
         .btn-secondary {
-            background-color: #64748b;
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            box-shadow: 0 2px 4px rgba(127, 140, 141, 0.3);
         }
         .btn-secondary:hover {
-            background-color: #475569;
+            box-shadow: 0 4px 8px rgba(127, 140, 141, 0.4);
         }
         #fileInput {
             display: none;
         }
         .hint {
             font-size: 0.875rem;
-            color: #94a3b8;
+            color: #95a5a6;
             margin-top: 1rem;
         }
         .hidden {
@@ -103,15 +108,14 @@
         }
         #loadingSection {
             text-align: center;
-            padding: 3rem 0;
+            padding: 2rem 0;
         }
         .spinner {
             display: inline-block;
             width: 3rem;
             height: 3rem;
-            border: 3px solid #e2e8f0;
-            border-top-color: #3b82f6;
             border-radius: 50%;
+            border-bottom: 3px solid #3498db;
             animation: spin 1s linear infinite;
             margin-bottom: 1rem;
         }
@@ -120,72 +124,41 @@
             to { transform: rotate(360deg); }
         }
         #loadingText {
-            color: #64748b;
-            font-size: 1rem;
+            color: #7f8c8d;
+            font-size: 1.125rem;
         }
-        .image-section {
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
-        h3 {
+        @media (max-width: 768px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .preview-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .preview-card h3 {
             font-size: 1.125rem;
             font-weight: 600;
-            color: #334155;
-            margin-bottom: 0.75rem;
-            padding-left: 0.25rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
         }
-        .image-container {
-            background-color: white;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            min-height: 200px;
+        .preview-container {
+            min-height: 350px;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        #resultContainer {
             background-image: url('https://pic.imgdb.cn/item/66049ac0f21886ccc077d44d.png');
             background-repeat: repeat;
-        }
-        .action-buttons {
-            text-align: center;
-            margin-top: 2rem;
-        }
-        .action-buttons .btn {
-            padding: 0.875rem 2.5rem;
-            font-weight: 500;
-            font-size: 1.05rem;
-        }
-        .action-buttons .btn + .btn {
-            margin-left: 1rem;
-        }
-        .config-note {
-            background-color: #f1f5f9;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid #3b82f6;
-        }
-        .config-note p {
-            color: #475569;
-            font-size: 0.875rem;
-            line-height: 1.5;
-        }
-        .config-note strong {
-            color: #1e293b;
-        }
-        footer {
-            margin-top: 3rem;
-            text-align: center;
-            color: #94a3b8;
-            font-size: 0.875rem;
-        }
-        footer a {
-            color: #3b82f6;
-            text-decoration: none;
-        }
-        footer a:hover {
-            text-decoration: underline;
+            border-radius: 8px;
+            overflow: hidden;
         }
         .preview-image {
             max-width: 100%;
@@ -193,62 +166,70 @@
             height: auto;
             width: auto;
             object-fit: contain;
-            border-radius: 0.25rem;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.875rem;
+        }
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
         }
         @media (max-width: 640px) {
             h1 {
-                font-size: 1.5rem;
+                font-size: 2rem;
             }
             #dropZone {
                 padding: 2.5rem 1rem;
             }
-            .action-buttons .btn + .btn {
-                margin-left: 0;
-                margin-top: 1rem;
-            }
             .action-buttons {
-                display: flex;
                 flex-direction: column;
                 align-items: center;
+            }
+            .action-buttons .btn {
+                width: 220px;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🖼️ 图片背景移除</h1>
-        <p class="subtitle">一键移除图片背景， Powered by Remove.bg</p>
-
-        <div class="config-note">
-            <p><strong>配置说明：</strong>请在下方代码中填入你的 Remove.bg API Key。<br>
-            获取 API Key：<a href="https://www.remove.bg/api" target="_blank">https://www.remove.bg/api</a>（注册后可免费使用，每月有免费额度）</p>
-        </div>
+        <h1>🖼️ AI Background Remover</h1>
+        <p class="subtitle">Remove image background automatically with AI • Fast and free</p>
 
         <div id="dropZone">
             <div class="icon">📁</div>
-            <p>拖拽图片到此处，或点击选择图片</p>
-            <button id="selectBtn" class="btn">选择图片</button>
+            <p>Drag & drop an image here, or click to select</p>
+            <button id="selectBtn" class="btn">Select Image</button>
             <input type="file" id="fileInput" accept="image/*" class="hidden">
-            <div class="hint">支持 JPG、PNG，最大文件大小 12MB</div>
+            <div class="hint">Supports JPG, PNG • Max 12MB</div>
         </div>
 
         <div id="loadingSection" class="hidden">
             <div class="spinner"></div>
-            <p id="loadingText">正在处理图片...</p>
+            <p id="loadingText">Processing...</p>
         </div>
 
-        <div id="resultSection">
-            <div class="image-section">
-                <h3>原图</h3>
-                <div id="originalContainer" class="image-container">
-                    <span style="color: #94a3b8;">请上传图片</span>
-                </div>
+        <div id="resultSection" class="result-grid hidden">
+            <div class="preview-card">
+                <h3>Original</h3>
+                <div id="originalContainer" class="preview-container"></div>
             </div>
-            <div class="image-section">
-                <h3>处理结果</h3>
-                <div id="resultContainer" class="image-container">
-                    <span style="color: #94a3b8;">等待处理...</span>
-                </div>
+            <div class="preview-card">
+                <h3>Result</h3>
+                <div id="resultContainer" class="preview-container"></div>
             </div>
         </div>
 
@@ -257,13 +238,13 @@
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                 </svg>
-                下载 PNG
+                Download PNG
             </button>
-            <button id="newImageBtn" class="btn btn-secondary">重新上传</button>
+            <button id="newImageBtn" class="btn btn-secondary">New Image</button>
         </div>
 
         <footer>
-            <p>Powered by <a href="https://www.remove.bg" target="_blank">remove.bg</a> • 纯前端部署，适用于 Cloudflare Pages</p>
+            <p>Powered by <a href="https://www.remove.bg" target="_blank">remove.bg</a> • Remove background in one click</p>
         </footer>
     </div>
 
@@ -271,13 +252,12 @@
         (function() {
             'use strict';
 
-            // ========== 请在这里填写你的 Remove.bg API Key ==========
-            // 获取地址: https://www.remove.bg/api
-            const REMOVE_BG_API_KEY = '3K9RgPY668AueP26K4UzPenL';
-            // =========================================================
-
-            // API endpoint - 本地后端代理
+            // ========== Configuration ==========
             const REMOVE_BG_API_URL = '/api/removebg';
+            // ===================================
+
+            // Global variables
+            let currentResultUrl = null;
 
             // DOM elements
             const dom = {
@@ -294,36 +274,24 @@
                 newImageBtn: document.getElementById('newImageBtn')
             };
 
-            // Current result blob URL for download
-            let currentResultUrl = null;
-
             // Initialize
             function init() {
-                // Check API key
-                if (!REMOVE_BG_API_KEY || REMOVE_BG_API_KEY.trim() === '') {
-                    console.warn('Please set your Remove.bg API Key in the code');
-                }
-
                 bindEvents();
             }
 
             function bindEvents() {
-                // Drag and drop
                 dom.dropZone.addEventListener('dragover', (e) => {
                     e.preventDefault();
-                    e.stopPropagation();
                     dom.dropZone.classList.add('dragover');
                 });
 
                 dom.dropZone.addEventListener('dragleave', (e) => {
                     e.preventDefault();
-                    e.stopPropagation();
                     dom.dropZone.classList.remove('dragover');
                 });
 
                 dom.dropZone.addEventListener('drop', (e) => {
                     e.preventDefault();
-                    e.stopPropagation();
                     dom.dropZone.classList.remove('dragover');
                     const files = e.dataTransfer.files;
                     if (files.length > 0) {
@@ -331,7 +299,6 @@
                     }
                 });
 
-                // Click to select
                 dom.selectBtn.addEventListener('click', () => {
                     dom.fileInput.click();
                 });
@@ -342,25 +309,20 @@
                     }
                 });
 
-                // Buttons
                 dom.newImageBtn.addEventListener('click', resetForNewImage);
+
                 dom.downloadBtn.addEventListener('click', downloadResult);
             }
 
             function resetForNewImage() {
-                // Revoke previous blob URL to free memory
+                dom.resultSection.classList.add('hidden');
+                dom.actionButtons.classList.add('hidden');
+                dom.dropZone.classList.remove('hidden');
+                dom.fileInput.value = '';
                 if (currentResultUrl) {
                     URL.revokeObjectURL(currentResultUrl);
                     currentResultUrl = null;
                 }
-
-                dom.dropZone.classList.remove('hidden');
-                dom.actionButtons.classList.add('hidden');
-                dom.fileInput.value = '';
-
-                // Clear containers
-                dom.originalContainer.innerHTML = '<span style="color: #94a3b8;">请上传图片</span>';
-                dom.resultContainer.innerHTML = '<span style="color: #94a3b8;">等待处理...</span>';
             }
 
             function downloadResult() {
@@ -373,29 +335,24 @@
             }
 
             async function processFile(file) {
-                // Validate API key
-                if (!REMOVE_BG_API_KEY || REMOVE_BG_API_KEY.trim() === '') {
-                    alert('错误：请先在代码中设置 Remove.bg API Key\n\n获取地址：https://www.remove.bg/api');
-                    return;
-                }
-
                 // Validate file type
                 if (!file.type.startsWith('image/')) {
-                    alert('请选择一个图片文件');
+                    alert('Please select an image file');
                     return;
                 }
 
                 // Validate file size (12MB max for free tier)
                 if (file.size > 12 * 1024 * 1024) {
-                    alert('文件大小不能超过 12MB');
+                    alert('File size must be less than 12MB');
                     return;
                 }
 
-                // Show original image
+                // Hide drop zone, show loading
                 dom.dropZone.classList.add('hidden');
                 dom.loadingSection.classList.remove('hidden');
                 dom.actionButtons.classList.add('hidden');
 
+                // Show original image
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = document.createElement('img');
@@ -409,18 +366,18 @@
                 };
                 reader.readAsDataURL(file);
 
-                // Send request to remove.bg API
+                // Send request to backend
                 try {
                     await removeBackground(file);
                 } catch (err) {
                     console.error('Processing error:', err);
-                    alert('处理失败：' + err.message);
+                    alert('Processing failed: ' + err.message);
                     resetForNewImage();
                 }
             }
 
             async function removeBackground(file) {
-                dom.loadingText.textContent = '正在上传图片并处理...';
+                dom.loadingText.textContent = 'Processing image...';
 
                 const formData = new FormData();
                 formData.append('image_file', file);
@@ -436,7 +393,7 @@
                     try {
                         const errorJson = await response.json();
                         if (errorJson && errorJson.error) {
-                            errorMsg = errorJson.error.title || errorJson.error.message || errorMsg;
+                            errorMsg = errorJson.error || errorMsg;
                         }
                     } catch (e) {
                         // ignore
@@ -445,7 +402,6 @@
                 }
 
                 const blob = await response.blob();
-
 
                 // Revoke old result if exists
                 if (currentResultUrl) {
@@ -462,14 +418,15 @@
                 dom.resultContainer.innerHTML = '';
                 dom.resultContainer.appendChild(img);
 
-                // Complete
-                dom.loadingSection.classList.add('hidden');
+                // Show result section
+                dom.resultSection.classList.remove('hidden');
                 dom.actionButtons.classList.remove('hidden');
+                dom.loadingSection.classList.add('hidden');
 
-                console.log('Background removed successfully!');
+                console.log('Processing complete!');
             }
 
-            // Start initialization when DOM is ready
+            // Start initialization
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', init);
             } else {
