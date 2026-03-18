@@ -9,3 +9,4 @@ __pycache__/
 *.log
 u2netp.onnx
 node_modules
+/node_modules
