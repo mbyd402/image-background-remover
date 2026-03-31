@@ -10,3 +10,9 @@ __pycache__/
 u2netp.onnx
 node_modules
 /node_modules
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
